@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from django.conf.urls import include, url
+from django.urls import include, path
 
 from aether.common.conf.urls import generate_urlpatterns
 
@@ -25,11 +25,11 @@ from .views import check_rq
 
 
 urlpatterns = generate_urlpatterns(token=True, kernel=True) + [
-    url(r'^', include('aether.sync.api.urls')),
+    path('', include('aether.sync.api.urls')),
 
-    url(r'^check-rq$', check_rq, name='check-rq'),
-    url(r'^rq/', include('django_rq.urls')),
+    path('check-rq', view=check_rq, name='check-rq'),
+    path('rq/', include('django_rq.urls')),
 
     # used by the Aether Mobile App
-    url(r'^sync/signin$', view=signin, name='signin'),
+    path('sync/signin', view=signin, name='signin'),
 ]

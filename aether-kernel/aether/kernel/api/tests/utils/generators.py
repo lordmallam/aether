@@ -19,7 +19,7 @@
 import random
 import uuid
 
-from autofixture import AutoFixture
+from autofixture import AutoFixture, generators
 
 from aether.kernel.api import models
 
@@ -147,16 +147,14 @@ def generate_project(
             ),
         ).create_one()
 
-        mapping = AutoFixture(
-            model=models.Mapping,
-            field_values=get_field_values(
-                default=dict(
-                    mappingset=mappingset,
-                    definition=mapping_definition(projectschema.pk),
-                ),
-                values=mapping_field_values,
-            ),
-        ).create_one()
+        # django-autofixture does not support Django 2 models with m2m relations.
+        # https://github.com/gregmuellegger/django-autofixture/pull/110
+        # alternative: https://model-mommy.readthedocs.io
+        mapping = models.Mapping.objects.create(
+            name=generators.StringGenerator(min_length=10, max_length=30),
+            mappingset=mappingset,
+            definition=mapping_definition(projectschema.pk),
+        )
 
         for _ in range(random.randint(*SUBMISSIONS_COUNT_RANGE)):
             submission = AutoFixture(

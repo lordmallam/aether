@@ -16,7 +16,7 @@
 # Main libraries
 
 # Aether common module, will also require:
-#   django < 2
+#   django
 #   django-cors-headers
 #   django-debug-toolbar
 #   django-prometheus
