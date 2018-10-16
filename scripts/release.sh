@@ -66,34 +66,34 @@ fi
 echo "Release version:  $VERSION"
 echo "Release revision: $TRAVIS_COMMIT"
 
-# Login in dockerhub with write permissions (repos are public)
-docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+# # Login in dockerhub with write permissions (repos are public)
+# docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
 
-# Try to create the aether network+volume if they don't exist.
-docker network create aether_internal      2>/dev/null || true
-docker volume  create aether_database_data 2>/dev/null || true
+# # Try to create the aether network+volume if they don't exist.
+# docker network create aether_internal      2>/dev/null || true
+# docker volume  create aether_database_data 2>/dev/null || true
 
-# Build dependencies
-./scripts/build_aether_utils_and_distribute.sh
-./scripts/build_common_and_distribute.sh
+# # Build dependencies
+# ./scripts/build_aether_utils_and_distribute.sh
+# ./scripts/build_common_and_distribute.sh
 
-# Prepare Aether UI assets
-docker-compose build ui-assets
-docker-compose run   ui-assets build
+# # Prepare Aether UI assets
+# docker-compose build ui-assets
+# docker-compose run   ui-assets build
 
-# Build docker images
-IMAGE_REPO='ehealthafrica'
-CORE_APPS=( kernel odk couchdb-sync ui )
-CORE_COMPOSE='docker-compose.yml'
-CONNECT_APPS=( producer )
-CONNECT_COMPOSE='docker-compose-connect.yml'
+# # Build docker images
+# IMAGE_REPO='ehealthafrica'
+# CORE_APPS=( kernel odk couchdb-sync ui )
+# CORE_COMPOSE='docker-compose.yml'
+# CONNECT_APPS=( producer )
+# CONNECT_COMPOSE='docker-compose-connect.yml'
 
-for APP in "${CORE_APPS[@]}"
-do
-    release_app $APP $CORE_COMPOSE
-done
+# for APP in "${CORE_APPS[@]}"
+# do
+#     release_app $APP $CORE_COMPOSE
+# done
 
-for CONNECT_APP in "${CONNECT_APPS[@]}"
-do
-    release_app $CONNECT_APP $CONNECT_COMPOSE
-done
+# for CONNECT_APP in "${CONNECT_APPS[@]}"
+# do
+#     release_app $CONNECT_APP $CONNECT_COMPOSE
+# done
