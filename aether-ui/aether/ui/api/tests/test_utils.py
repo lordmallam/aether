@@ -28,6 +28,7 @@ class ViewsTest(TestCase):
 
     def test_kernel_data_request(self):
         result = utils.kernel_data_request('projects/')
+
         self.assertIn('count', result)
         with self.assertRaises(Exception):
             utils.kernel_data_request('projectss', 'post', {'wrong-input': 'tests'})
