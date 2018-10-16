@@ -49,6 +49,11 @@ function travis-branch-commit() {
         return 1
     fi
 
+    VERSION=`cat VERSION`
+    echo ${VERSION}
+    VERSION=${VERSION} + 0.0.1
+    echo ${VERSION}
+
     if ! git add --all .; then
         err "failed to add modified files to git index"
         return 1
