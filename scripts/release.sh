@@ -92,6 +92,7 @@ function travis-branch-commit() {
     #     msg "not pushing updates to branch $TRAVIS_BRANCH"
     #     return 0
     # fi
+    git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH"
     if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         err "failed to push git changes"
         return 1
