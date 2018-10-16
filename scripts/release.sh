@@ -84,9 +84,10 @@ function travis-branch-commit() {
         return 1
     fi
     local remote=origin
-    # if [[ $GITHUB_TOKEN ]]; then
-    #     remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
-    # fi
+    echo "SLUG: " $TRAVIS_REPO_SLUG
+    if [[ $GITHUB_TOKEN ]]; then
+        remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
+    fi
     # if [[ $TRAVIS_BRANCH != master ]]; then
     #     msg "not pushing updates to branch $TRAVIS_BRANCH"
     #     return 0
