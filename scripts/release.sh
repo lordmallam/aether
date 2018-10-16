@@ -65,7 +65,8 @@ function travis-branch-commit() {
     local v=$1
     echo ${v}
     VERSION=$(increment_version ${v} 3)
-    echo ${VERSION}
+    echo ${VERSION} > VERSION
+    cat VERSION
 
     if ! git add --all .; then
         err "failed to add modified files to git index"
