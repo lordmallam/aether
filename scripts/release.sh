@@ -113,7 +113,7 @@ then
 elif [[ $TRAVIS_BRANCH =~ ^release\-[0-9]+\.[0-9]+[\.0-9]*$ ]]
 then
     VERSION=`cat VERSION`
-    FILE_VERSION=VERSION
+    FILE_VERSION=${VERSION}
     # append "-rc" suffix
     VERSION=${VERSION}-rc
 
