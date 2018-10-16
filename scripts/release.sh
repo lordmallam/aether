@@ -62,9 +62,9 @@ function travis-branch-commit() {
         return 1
     fi
 
-    VERSION=`cat VERSION`
-    echo ${VERSION}
-    VERSION=$(increment_version ${VERSION} 3)
+    local v=$1
+    echo ${v}
+    VERSION=$(increment_version ${v} 3)
     echo ${VERSION}
 
     if ! git add --all .; then
@@ -127,7 +127,7 @@ fi
 echo "Release version:  $VERSION"
 echo "Release revision: $TRAVIS_COMMIT"
 
-travis-branch-commit
+travis-branch-commit ${VERSION}
 
 # # Login in dockerhub with write permissions (repos are public)
 # docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
