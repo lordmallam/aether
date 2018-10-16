@@ -64,7 +64,7 @@ function travis-branch-commit() {
 
     VERSION=`cat VERSION`
     echo ${VERSION}
-    VERSION=increment_version ${VERSION} 3
+    VERSION=$(increment_version ${VERSION} 3)
     echo ${VERSION}
 
     if ! git add --all .; then
