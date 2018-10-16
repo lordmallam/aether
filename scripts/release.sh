@@ -57,7 +57,7 @@ increment_version() {
 }
 
 function travis-branch-commit() {
-    printenv
+    echo "TOKEN: " ${GITHUB_TOKEN}
     if ! git checkout "$TRAVIS_BRANCH"; then
         err "failed to checkout $TRAVIS_BRANCH"
         return 1

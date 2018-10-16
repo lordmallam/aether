@@ -1,70 +1,26 @@
 sudo: required
 language: python
 python:
-  - '3.6'
-
+- '3.6'
 services:
-  - docker
-
-
-# use matrix to parallelize tests
+- docker
 matrix:
   fast_finish: true
   include:
-    # - name: "Aether CORE tests (Kernel, Client, UI, ODK and CouchDB-Sync)"
-    #   stage: test
-    #   env: 'TEST_MODE=all'
-
-    # split containers one by one
-    # - name: "Aether Kernel tests"
-    #   stage: test
-    #   env: 'TEST_MODE=kernel'
-
-    # - name: "Aether Client tests"
-    #   stage: test
-    #   env: 'TEST_MODE=client'
-
-    # - name: "Aether ODK module tests"
-    #   stage: test
-    #   env: 'TEST_MODE=odk'
-
-    # - name: "Aether CouchDB-Sync module tests"
-    #   stage: test
-    #   env: 'TEST_MODE=couchdb-sync'
-
-    # - name: "Aether UI tests"
-    #   stage: test
-    #   env: 'TEST_MODE=ui'
-
-    # - name: "Integration tests (Kernel with Kakfa/Zookeeper and Producer)"
-    #   stage: test
-    #   env: 'TEST_MODE=integration'
-
-    #  - name: "Kubernetes tests (Kernel and ODK)"
-    #    stage: test
-    #    env: 'TEST_MODE=kubernetes'
-
-    # execute only to deploy
-    - name: "Aether release"
-      stage: deploy
-      script: ./scripts/release.sh
-
-
+  - name: Aether release
+    stage: deploy
+    script: "./scripts/release.sh"
 install: true
-
 before_script:
-  - ./scripts/generate-docker-compose-credentials.sh > .env
-
+- "./scripts/generate-docker-compose-credentials.sh > .env"
 script:
-  - ./scripts/test_travis.sh $TEST_MODE
-
+- "./scripts/test_travis.sh $TEST_MODE"
 after_script:
-  - ./scripts/kill_all.sh
-
+- "./scripts/kill_all.sh"
 after_failure:
-  - ./scripts/test_travis_failure.sh $TEST_MODE
-
-# TODO: move this secured global env var to Travis settings
+- "./scripts/test_travis_failure.sh $TEST_MODE"
 env:
   global:
-    secure: PmbhrEFpSypsToBPSTPOxPPgzr6YM+kpFutHn9WJm5VNicukhstPSxo5q4nZ6wrHL+8C3GsJjVMA+YEg2r8kU9w/uEFwJYn4irEWivKwAdglhZLIyfXmhPbBSHoPvDFfAp7mIvX57QOuKvw/ZA22zgsFN3Di9b5VPN6khYwALpAsEJb9qj8UewPfFbcJBhR9l01ZTOcnN27vT6rlCA+WKleViYjMvO8Ru+1H/sOSFEJYA9SRroa2fc8N249tM7MNt9NmDBilOSai98TujHMcgvPM6n1D0YFjqAm6KyvQpW3QdNF5mfhzJVFM48SpsQpzE2xMDeU+NBtYmUV1BgdJcv56qC88NUtOxtK3oQ3NN2l5XyJnLLM3R5zGHyCZ1AOc8w0y8Bn7yYElTwMXAMnsNzuWE+fXR7MJjVIoDkvgmAfnDvDpOwPNC2P/6DDu5doQvdkM//hNGvxlbGnYsoTLBKuFWwy84YXs3ACSFHtKUMf+/yBsVWJ3Nqe/YCMt1052sd7cumjcgyCQNu0xNv6DRoPqNTnqmWzHHROp8DShGEGG+6k8QD2l14thedV7o/esSKSYBKlkcDt1+4F+VKGYKq5jEtMu8dLELoZ1ldZLWNmyYi81FkA+c5BXHOh+ixTkoamqZ1pkyCF0Q82V9wGkVZh+BJxwYb+9tcWy8Yw/llw=
+  - secure: PmbhrEFpSypsToBPSTPOxPPgzr6YM+kpFutHn9WJm5VNicukhstPSxo5q4nZ6wrHL+8C3GsJjVMA+YEg2r8kU9w/uEFwJYn4irEWivKwAdglhZLIyfXmhPbBSHoPvDFfAp7mIvX57QOuKvw/ZA22zgsFN3Di9b5VPN6khYwALpAsEJb9qj8UewPfFbcJBhR9l01ZTOcnN27vT6rlCA+WKleViYjMvO8Ru+1H/sOSFEJYA9SRroa2fc8N249tM7MNt9NmDBilOSai98TujHMcgvPM6n1D0YFjqAm6KyvQpW3QdNF5mfhzJVFM48SpsQpzE2xMDeU+NBtYmUV1BgdJcv56qC88NUtOxtK3oQ3NN2l5XyJnLLM3R5zGHyCZ1AOc8w0y8Bn7yYElTwMXAMnsNzuWE+fXR7MJjVIoDkvgmAfnDvDpOwPNC2P/6DDu5doQvdkM//hNGvxlbGnYsoTLBKuFWwy84YXs3ACSFHtKUMf+/yBsVWJ3Nqe/YCMt1052sd7cumjcgyCQNu0xNv6DRoPqNTnqmWzHHROp8DShGEGG+6k8QD2l14thedV7o/esSKSYBKlkcDt1+4F+VKGYKq5jEtMu8dLELoZ1ldZLWNmyYi81FkA+c5BXHOh+ixTkoamqZ1pkyCF0Q82V9wGkVZh+BJxwYb+9tcWy8Yw/llw=
+  matrix:
+    secure: iniEl2g3LR7u9FZZYA6thQGot2UMRxnJEW2Km71jX4dasbKk1xiyvRrchz2mHgWud35kaexq5GfV9VKZPtJ0XNLtKujOuoMv2uXhSHVdtTJslUPF9utqzcNtOZaB9I0bDik5So9A7g64LuzlXK8cSBpE0544vc0mTnKHEDeNonUtMclbu/OElW+9VtgESHprCNai8F457nodqm/LG6A6ujhTuD/5SzHvmmOB6cqAmbrc3oOL86lA2xrk7N89RJnRnO/dc1yGgabdGhqOElh0bhST/NI1z8zqAVZZ1q1OIWX5mMLVA3pmcmkcX/s5hCQwSqnKDz/Oywr9sfk6UPRc8m3HW4I/qEYseIDGHjIYpRGH3qOg2oBFA9rIElMMgrckKqSnqsPCuyFSXKZU0m/X8iu1f/TVoLby/d2aQn9+SmHU18QDaEzZ2XXB3IHKaZVhYRvrljPTrRMpocokKysR3E5etBpEIQ3lJpMZYhxb12e1sd+ElZGSDVn/IrZnzTyLGnww2jyPRXKJuAb7l1nITwNfbTey48IFJGwFB0MBq/zsQHZc5IXplVZBO8Ivk59PDWBx+q0UWLKqYzP3QomQaVunmkDcr23T1A9sBmmA9GQLd7nbLKwpEtTsISXNz5OaUypi1Ax9PjiFnRuJJ58TYfr3DrnIVnZVcMFFepKB3bw=
