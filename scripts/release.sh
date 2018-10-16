@@ -57,6 +57,8 @@ increment_version() {
 }
 
 function travis-branch-commit() {
+    echo "token: " ${GH_TOKEN}
+    printenv
     if ! git checkout "$TRAVIS_BRANCH"; then
         err "failed to checkout $TRAVIS_BRANCH"
         return 1
@@ -83,15 +85,15 @@ function travis-branch-commit() {
         err "failed to create git tag: $git_tag"
         return 1
     fi
-    # local remote=origin
-    # if [[ $GITHUB_TOKEN ]]; then
-    #     remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
-    # fi
+    local remote=origin
+    if [[ $GH_TOKEN ]]; then
+        remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
+    fi
     # if [[ $TRAVIS_BRANCH != master ]]; then
     #     msg "not pushing updates to branch $TRAVIS_BRANCH"
     #     return 0
     # fi
-    if ! git push --quiet > /dev/null 2>&1; then
+    if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         err "failed to push git changes"
         return 1
     fi
