@@ -108,16 +108,19 @@ function err() {
 if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+[\.0-9]*$ ]]
 then
     VERSION=$TRAVIS_TAG
+    FILE_VERSION=$TRAVIS_TAG
 
 elif [[ $TRAVIS_BRANCH =~ ^release\-[0-9]+\.[0-9]+[\.0-9]*$ ]]
 then
     VERSION=`cat VERSION`
+    FILE_VERSION=VERSION
     # append "-rc" suffix
     VERSION=${VERSION}-rc
 
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
     VERSION='alpha'
+    FILE_VERSION=`cat VERSION`
 
 else
     echo "Skipping a release because this branch is not permitted: ${TRAVIS_BRANCH}"
@@ -127,7 +130,7 @@ fi
 echo "Release version:  $VERSION"
 echo "Release revision: $TRAVIS_COMMIT"
 
-travis-branch-commit ${VERSION}
+travis-branch-commit ${FILE_VERSION}
 
 # # Login in dockerhub with write permissions (repos are public)
 # docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
