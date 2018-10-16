@@ -131,6 +131,7 @@ fi
 
 echo "Release version:  $VERSION"
 echo "Release revision: $TRAVIS_COMMIT"
+echo "DOCKER: $DOCKER_HUB_PASSWORD"
 
 travis-branch-commit ${FILE_VERSION}
 
