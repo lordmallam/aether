@@ -102,6 +102,7 @@ function travis-branch-commit() {
                 err 'VERSION value is less than the branch version'
                 return 1;;
         esac
+    fi
     if ! git checkout "$TRAVIS_BRANCH"; then
         err "failed to checkout $TRAVIS_BRANCH"
         return 1
