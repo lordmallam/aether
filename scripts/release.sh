@@ -91,14 +91,14 @@ function travis-branch-commit() {
     then
         version_compare $1 $2
         echo "RE ::: " $?
-        if [[ $? = 0]];
+        if [ $? = 0 ]
         then
             msg "PERFECT MATCH"
-        elif [[ $? = 1]];
+        elif [ $? = 1 ]
         then
             err "VERSION value is greater than the branch version"
             exit 1
-        elif [[ $? = 2]];
+        elif [ $? = 2 ]
         then
             err "VERSION value is less than the branch version"
             exit 1
