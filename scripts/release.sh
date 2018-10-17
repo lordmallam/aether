@@ -106,7 +106,7 @@ function travis-branch-commit() {
     fi
     if ! git checkout "$TRAVIS_BRANCH"; then
         err "failed to checkout $TRAVIS_BRANCH"
-        return 1
+        exit 1
     fi
 
     VERSION=$(increment_version $FILE_VERSION 3)
@@ -119,7 +119,7 @@ function travis-branch-commit() {
     # make Travis CI skip this build
     if ! git commit -m "Travis CI update [ci skip]"; then
         err "failed to commit updates"
-        return 1
+        exit 1
     fi
     local remote=origin
     if [[ $GITHUB_TOKEN ]]; then
@@ -127,7 +127,7 @@ function travis-branch-commit() {
     fi
     if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         err "failed to push git changes"
-        return 1
+        exit 1
     fi
 }
 
