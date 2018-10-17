@@ -162,6 +162,7 @@ function travis-branch-commit() {
     if [ ${RELEASE_ALPHA} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
+        git fetch --all --prune 
         git checkout "develop"
         echo ${NEW_VERSION} > VERSION
         git add --all .
