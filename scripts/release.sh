@@ -44,6 +44,7 @@ release_app () {
 }
 
 version_compare () {
+    echo "HERE:: " $1 $2
     if [[ $1 == $2 ]]
     then
         return 0
@@ -68,7 +69,7 @@ version_compare () {
         fi
         if ((10#${ver1[i]} < 10#${ver2[i]}))
         then
-            return 2
+            return 3
         fi
     done
     return 0
@@ -90,7 +91,7 @@ increment_version() {
 function travis-branch-commit() {
     if [[ $TRAVIS_BRANCH != "develop" ]]
     then
-        `version_compare $1 $2`
+        version_compare $1 $2
         echo "RE:: " $?
         case $? in
             0)  # versions match
@@ -98,7 +99,7 @@ function travis-branch-commit() {
             1) 
                 err "VERSION value is greater than the branch version"
                 return 1;;
-            2) 
+            3) 
                 err "VERSION value is less than the branch version"
                 return 1;;
         esac
