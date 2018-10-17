@@ -91,15 +91,16 @@ function travis-branch-commit() {
     local FILE_VERSION=$1 BRANCH_VERSION=$2
     if [[ $TRAVIS_BRANCH != "develop" ]]
     then
+        msg "I am here..."
         version_compare ${FILE_VERSION} ${BRANCH_VERSION}
         case $? in
             0)  # versions match
-                msg 'PERFECT MATCH';;
+                msg "PERFECT MATCH";;
             1) 
-                err 'VERSION value is greater than the branch version'
+                err "VERSION value is greater than the branch version"
                 return 1;;
             2) 
-                err 'VERSION value is less than the branch version'
+                err "VERSION value is less than the branch version"
                 return 1;;
         esac
     fi
