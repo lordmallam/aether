@@ -42,6 +42,40 @@ release_app () {
     fi
 }
 
+release_process () {
+    # Login in dockerhub with write permissions (repos are public)
+    docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+
+    # Try to create the aether network+volume if they don't exist.
+    docker network create aether_internal      2>/dev/null || true
+    docker volume  create aether_database_data 2>/dev/null || true
+
+    # Build dependencies
+    ./scripts/build_aether_utils_and_distribute.sh
+    ./scripts/build_common_and_distribute.sh
+
+    # Prepare Aether UI assets
+    docker-compose build ui-assets
+    docker-compose run   ui-assets build
+
+    # Build docker images
+    IMAGE_REPO='ehealthafrica'
+    CORE_APPS=( kernel odk couchdb-sync ui )
+    CORE_COMPOSE='docker-compose.yml'
+    CONNECT_APPS=( producer )
+    CONNECT_COMPOSE='docker-compose-connect.yml'
+
+    for APP in "${CORE_APPS[@]}"
+    do
+        release_app $APP $CORE_COMPOSE
+    done
+
+    for CONNECT_APP in "${CONNECT_APPS[@]}"
+    do
+        release_app $CONNECT_APP $CONNECT_COMPOSE
+    done
+}
+
 version_compare () {
     if [[ $1 == $2 ]]
     then
@@ -87,13 +121,16 @@ increment_version() {
 }
 
 function travis-branch-commit() {
+    RELEASE_ALPHA=0
     if [ $TRAVIS_BRANCH != "develop" ]
     then
         version_compare $1 $2
         COMPARE=$?
         if [[ ${COMPARE} = 0 ]]
         then
-            msg "PERFECT MATCH"
+            msg "Starting versions (" ${VERSION} ", latest) release process ..."
+            # release_process
+            RELEASE_ALPHA=1
         elif [[ ${COMPARE} = 1 ]]
         then
             err "VERSION value is greater than the branch version"
@@ -104,23 +141,15 @@ function travis-branch-commit() {
             exit 1
         fi
     fi
-    if ! git checkout "$TRAVIS_BRANCH"; then
-        err "failed to checkout $TRAVIS_BRANCH"
-        exit 1
-    fi
 
-    VERSION=$(increment_version $FILE_VERSION 3)
-    echo ${VERSION} > VERSION
+    git checkout "$TRAVIS_BRANCH"
 
-    if ! git add --all .; then
-        err "failed to add modified files to git index"
-        exit 1
-    fi
+    NEW_VERSION=$(increment_version $FILE_VERSION 3)
+    echo ${NEW_VERSION} > VERSION
+
+    git add --all .
     # make Travis CI skip this build
-    if ! git commit -m "Travis CI update [ci skip]"; then
-        err "failed to commit updates"
-        exit 1
-    fi
+    git commit -m "Travis CI update [ci skip]"
     local remote=origin
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
@@ -129,6 +158,18 @@ function travis-branch-commit() {
         err "failed to push git changes"
         exit 1
     fi
+
+    if [[ ${RELEASE_ALPHA} = 1]]
+    then
+        echo "Updating develop branch version to " ${NEW_VERSION}
+        git checkout "develop"
+        echo ${NEW_VERSION} > VERSION
+        git add --all .
+        git commit -m "Version updated to " ${NEW_VERSION}
+        if ! git push --quiet --follow-tags "$remote" "develop" > /dev/null 2>&1; then
+            err "failed to push git changes"
+            exit 1
+        fi
 }
 
 function msg() {
@@ -167,37 +208,5 @@ fi
 
 echo "Release version:  $VERSION"
 echo "Release revision: $TRAVIS_COMMIT"
-
-# # Login in dockerhub with write permissions (repos are public)
-# docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-
-# # Try to create the aether network+volume if they don't exist.
-# docker network create aether_internal      2>/dev/null || true
-# docker volume  create aether_database_data 2>/dev/null || true
-
-# # Build dependencies
-# ./scripts/build_aether_utils_and_distribute.sh
-# ./scripts/build_common_and_distribute.sh
-
-# # Prepare Aether UI assets
-# docker-compose build ui-assets
-# docker-compose run   ui-assets build
-
-# # Build docker images
-# IMAGE_REPO='ehealthafrica'
-# CORE_APPS=( kernel odk couchdb-sync ui )
-# CORE_COMPOSE='docker-compose.yml'
-# CONNECT_APPS=( producer )
-# CONNECT_COMPOSE='docker-compose-connect.yml'
-
-# for APP in "${CORE_APPS[@]}"
-# do
-#     release_app $APP $CORE_COMPOSE
-# done
-
-# for CONNECT_APP in "${CONNECT_APPS[@]}"
-# do
-#     release_app $CONNECT_APP $CONNECT_COMPOSE
-# done
 
 travis-branch-commit ${FILE_VERSION} ${BRANCH_VERSION}
