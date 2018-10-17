@@ -159,7 +159,7 @@ function travis-branch-commit() {
         exit 1
     fi
 
-    if [[ ${RELEASE_ALPHA} = 1]]
+    if [ ${RELEASE_ALPHA} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
         git checkout "develop"
