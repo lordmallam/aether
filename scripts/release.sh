@@ -170,6 +170,7 @@ function travis-branch-commit() {
             err "failed to push git changes"
             exit 1
         fi
+    fi
 }
 
 function msg() {
