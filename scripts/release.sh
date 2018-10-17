@@ -88,12 +88,9 @@ increment_version() {
 }
 
 function travis-branch-commit() {
-    echo $1 $2
-    local FILE_VERSION=$1 BRANCH_VERSION=$2
     if [[ $TRAVIS_BRANCH != "develop" ]]
     then
-        msg "I am here..."
-        version_compare ${FILE_VERSION} ${BRANCH_VERSION}
+        version_compare $1 $2
         case $? in
             0)  # versions match
                 msg "PERFECT MATCH";;
