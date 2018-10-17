@@ -43,6 +43,37 @@ release_app () {
     fi
 }
 
+version_compare () {
+    if [[ $1 == $2 ]]
+    then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if [[ -z ${ver2[i]} ]]
+        then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+            return 2
+        fi
+    done
+    return 0
+}
+
 # Usage: increment_version <version> [<position>]
 increment_version() {
  local v=$1
@@ -57,16 +88,27 @@ increment_version() {
 }
 
 function travis-branch-commit() {
+    local FILE_VERSION=$1 BRANCH_VERSION=$2
+    if [[ $BRANCH != "develop"]]
+    then
+        version_compare ${FILE_VERSION} ${BRANCH_VERSION}
+        case $? in
+            0)  # versions match
+                msg 'PERFECT MATCH';;
+            1) 
+                err 'VERSION value is greater than the branch version'
+                return 1;;
+            2) 
+                err 'VERSION value is less than the branch version'
+                return 1;;
+        esac
     if ! git checkout "$TRAVIS_BRANCH"; then
         err "failed to checkout $TRAVIS_BRANCH"
         return 1
     fi
 
-    local v=$1
-    echo ${v}
-    VERSION=$(increment_version ${v} 3)
+    VERSION=$(increment_version $FILE_VERSION 3)
     echo ${VERSION} > VERSION
-    cat VERSION
 
     if ! git add --all .; then
         err "failed to add modified files to git index"
@@ -77,22 +119,10 @@ function travis-branch-commit() {
         err "failed to commit updates"
         return 1
     fi
-    # add to your .travis.yml: `branches\n  except:\n  - "/\\+travis\\d+$/"\n`
-    local git_tag=SOME_TAG_TRAVIS_WILL_NOT_BUILD+travis$TRAVIS_BUILD_NUMBER
-    if ! git tag "$git_tag" -m "Version increament tag from Travis CI build $TRAVIS_BUILD_NUMBER"; then
-        err "failed to create git tag: $git_tag"
-        return 1
-    fi
     local remote=origin
-    echo "SLUG: " $TRAVIS_REPO_SLUG
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     fi
-    # if [[ $TRAVIS_BRANCH != master ]]; then
-    #     msg "not pushing updates to branch $TRAVIS_BRANCH"
-    #     return 0
-    # fi
-    git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH"
     if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         err "failed to push git changes"
         return 1
@@ -117,6 +147,9 @@ elif [[ $TRAVIS_BRANCH =~ ^release\-[0-9]+\.[0-9]+[\.0-9]*$ ]]
 then
     VERSION=`cat VERSION`
     FILE_VERSION=${VERSION}
+
+    IFS=- read -a ver_number <<< "$TRAVIS_BRANCH"
+    BRANCH_VERSION=${ver_number[1]}
     # append "-rc" suffix
     VERSION=${VERSION}-rc
 
@@ -132,8 +165,6 @@ fi
 
 echo "Release version:  $VERSION"
 echo "Release revision: $TRAVIS_COMMIT"
-
-travis-branch-commit ${FILE_VERSION}
 
 # # Login in dockerhub with write permissions (repos are public)
 # docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
@@ -166,3 +197,5 @@ travis-branch-commit ${FILE_VERSION}
 # do
 #     release_app $CONNECT_APP $CONNECT_COMPOSE
 # done
+
+travis-branch-commit ${FILE_VERSION} ${BRANCH_VERSION}
