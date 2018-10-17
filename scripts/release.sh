@@ -91,7 +91,6 @@ function travis-branch-commit() {
     then
         version_compare $1 $2
         COMPARE=$?
-        echo "COMPARE >> " ${COMPARE}
         if [[ ${COMPARE} = 0 ]]
         then
             msg "PERFECT MATCH"
@@ -115,7 +114,7 @@ function travis-branch-commit() {
 
     if ! git add --all .; then
         err "failed to add modified files to git index"
-        return 1
+        exit 1
     fi
     # make Travis CI skip this build
     if ! git commit -m "Travis CI update [ci skip]"; then
@@ -133,7 +132,7 @@ function travis-branch-commit() {
 }
 
 function msg() {
-    echo "travis-commit: $*"
+    echo "Versioning: $*"
 }
 
 function err() {
