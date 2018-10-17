@@ -89,7 +89,7 @@ increment_version() {
 
 function travis-branch-commit() {
     local FILE_VERSION=$1 BRANCH_VERSION=$2
-    if [[ $BRANCH != "develop"]]
+    if [[ $TRAVIS_BRANCH != "develop" ]]
     then
         version_compare ${FILE_VERSION} ${BRANCH_VERSION}
         case $? in
