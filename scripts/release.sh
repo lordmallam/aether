@@ -88,7 +88,8 @@ increment_version() {
 }
 
 function travis-branch-commit() {
-    if [[ $TRAVIS_BRANCH != "develop" ]]
+    if [ $TRAVIS_BRANCH != "develop" ]
+    then
         $(version_compare $1 $2)
         echo "RE:: " $?
         case $? in
