@@ -91,16 +91,18 @@ function travis-branch-commit() {
     then
         version_compare $1 $2
         echo "RE ::: " $?
-        case $? in
-            0)  # versions match
-                msg "PERFECT MATCH";;
-            1) 
-                err "VERSION value is greater than the branch version"
-                return 1;;
-            3) 
-                err "VERSION value is less than the branch version"
-                return 1;;
-        esac
+        if [[ $? = 0]];
+        then
+            msg "PERFECT MATCH"
+        elif [[ $? = 1]];
+        then
+            err "VERSION value is greater than the branch version"
+            exit 1
+        elif [[ $? = 2]];
+        then
+            err "VERSION value is less than the branch version"
+            exit 1
+        fi
     fi
     if ! git checkout "$TRAVIS_BRANCH"; then
         err "failed to checkout $TRAVIS_BRANCH"
