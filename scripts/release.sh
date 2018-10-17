@@ -88,6 +88,7 @@ increment_version() {
 }
 
 function travis-branch-commit() {
+    echo $1 $2
     local FILE_VERSION=$1 BRANCH_VERSION=$2
     if [[ $TRAVIS_BRANCH != "develop" ]]
     then
