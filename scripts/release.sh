@@ -162,9 +162,14 @@ function travis-branch-commit() {
     if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
-        git fetch ${remote}
+        git fetch ${remote} --all --prune
+        echo "--------------------------------------------"
+        echo (git rev-parse develop)
+        echo "--------------------------------------------"
         git branch -a
+        echo "--------------------------------------------"
         git checkout develop
+        echo "--------------------------------------------"
         echo ${NEW_VERSION} > VERSION
         git add VERSION
         git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
