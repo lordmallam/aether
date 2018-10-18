@@ -162,7 +162,9 @@ function travis-branch-commit() {
     if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
-        git fetch ${remote}
+        git fetch ${remote} develop
+        echo "--------------------------------------------"
+        git branch develop FETCH_HEAD
         echo "--------------------------------------------"
         echo `git rev-parse develop`
         echo "--------------------------------------------"
