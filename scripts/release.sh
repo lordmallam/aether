@@ -164,7 +164,7 @@ function travis-branch-commit() {
         echo "Updating develop branch version to " ${NEW_VERSION}
         git fetch ${remote} --all --prune
         echo "--------------------------------------------"
-        echo (git rev-parse develop)
+        echo `git rev-parse develop`
         echo "--------------------------------------------"
         git branch -a
         echo "--------------------------------------------"
