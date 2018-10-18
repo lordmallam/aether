@@ -162,6 +162,7 @@ function travis-branch-commit() {
     if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
+        git clone ${remote} --branch develop
         git checkout develop
         echo ${NEW_VERSION} > VERSION
         git add VERSION
