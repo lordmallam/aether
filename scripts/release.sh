@@ -142,8 +142,6 @@ function travis-branch-commit() {
         fi
     fi
 
-    git checkout "$TRAVIS_BRANCH"
-
     NEW_VERSION=$(increment_version $FILE_VERSION 3)
     echo ${NEW_VERSION} > VERSION
 
@@ -162,11 +160,11 @@ function travis-branch-commit() {
     if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
-        git checkout "develop"
+        git checkout -qf develop
         echo ${NEW_VERSION} > VERSION
         git add VERSION
-        git commit -m "Version updated to " ${NEW_VERSION} "[ci skip]" #Skip travis build on develop commit
-        if ! git push --quiet --follow-tags "$remote" "develop" > /dev/null 2>&1; then
+        git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
+        if ! git push --quiet --follow-tags "$remote develop" > /dev/null 2>&1; then
             err "failed to push git changes to develop branch"
             exit 1
         fi
