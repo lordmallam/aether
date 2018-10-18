@@ -163,7 +163,7 @@ function travis-branch-commit() {
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
         git fetch --depth=1 "${remote}" refs/heads/develop:refs/remotes/develop
-        git checkout --track "develop"
+        git checkout --track develop
         git branch -a
         echo ${NEW_VERSION} > VERSION
         git add VERSION
