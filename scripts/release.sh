@@ -154,15 +154,15 @@ function travis-branch-commit() {
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     fi
-    if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
-        err "failed to push git changes to" $TRAVIS_BRANCH
-        exit 1
-    fi
+    # if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
+    #     err "failed to push git changes to" $TRAVIS_BRANCH
+    #     exit 1
+    # fi
 
     if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
-        git fetch ${remote} --all --prune
+        git fetch --all --prune ${remote}
         echo "--------------------------------------------"
         echo `git rev-parse develop`
         echo "--------------------------------------------"
