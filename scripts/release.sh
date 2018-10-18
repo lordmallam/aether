@@ -168,7 +168,7 @@ function travis-branch-commit() {
         echo ${NEW_VERSION} > VERSION
         git add VERSION
         git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
-        if ! git push -b --quiet --follow-tags "$remote develop" > /dev/null 2>&1; then
+        if ! git push "origin/develop" > /dev/null 2>&1; then
             err "failed to push git changes to develop branch"
             exit 1
         fi
