@@ -164,7 +164,7 @@ function travis-branch-commit() {
         echo "Updating develop branch version to " ${NEW_VERSION}
         git fetch --depth=1 "${remote}" refs/heads/develop:refs/remotes/origin/develop
         git branch -a
-        git checkout develop
+        git checkout "origin/develop"
         echo ${NEW_VERSION} > VERSION
         git add VERSION
         git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
