@@ -121,7 +121,7 @@ increment_version() {
 }
 
 function travis-branch-commit() {
-    RELEASE_ALPHA=0
+    UPDATE_DEVELOP_VERSION=0
     if [ $TRAVIS_BRANCH != "develop" ]
     then
         version_compare $1 $2
@@ -130,7 +130,7 @@ function travis-branch-commit() {
         then
             msg "Starting versions (" ${VERSION} ", latest) release process ..."
             # release_process
-            RELEASE_ALPHA=1
+            UPDATE_DEVELOP_VERSION=1
         elif [[ ${COMPARE} = 1 ]]
         then
             err "VERSION value is greater than the branch version"
@@ -147,7 +147,7 @@ function travis-branch-commit() {
     NEW_VERSION=$(increment_version $FILE_VERSION 3)
     echo ${NEW_VERSION} > VERSION
 
-    git add --all .
+    git add VERSION
     # make Travis CI skip this build
     git commit -m "Travis CI update [ci skip]"
     local remote=origin
@@ -155,20 +155,19 @@ function travis-branch-commit() {
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     fi
     if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
-        err "failed to push git changes"
+        err "failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
 
-    if [ ${RELEASE_ALPHA} = 1 ]
+    if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
-        git fetch --all --prune 
         git checkout "develop"
         echo ${NEW_VERSION} > VERSION
-        git add --all .
-        git commit -m "Version updated to " ${NEW_VERSION}
+        git add VERSION
+        git commit -m "Version updated to " ${NEW_VERSION} "[ci skip]" #Skip travis build on develop commit
         if ! git push --quiet --follow-tags "$remote" "develop" > /dev/null 2>&1; then
-            err "failed to push git changes"
+            err "failed to push git changes to develop branch"
             exit 1
         fi
     fi
