@@ -124,38 +124,26 @@ increment_version() {
     echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+1))`/
 }
 
-function git_branch_commit() {
-    local branch_value=$2
+function git_branch_commit_and_release() {
+    local BRANCH_OR_TAG_VALUE=$2
     version_compare $1 $2
     COMPARE=$?
-    if [[ ${COMPARE} = 0 ]]
+    if [[ ${COMPARE} = 1 ]]
     then
-        echo "Starting version " ${VERSION} " release process ..."
-        # release_process
-    elif [[ ${COMPARE} = 1 ]]
-    then
-        echo "VERSION value " $1 " is greater than " $3 " version" $2
-        for (( p=`grep -o "\."<<<".$branch_value"|wc -l`; p<3; p++)); do 
-            branch_value+=.0; done;
-        echo "Setting VERSION to " ${branch_value}
-        exit 0
+        echo "VERSION value" $1 "is greater than" $3 "version" $2
     elif [[ ${COMPARE} = 2 ]]
     then
-        echo "VERSION value " $1 " is less than " $3 " version" $2
-        for (( p=`grep -o "\."<<<".$branch_value"|wc -l`; p<3; p++)); do 
-            branch_value+=.0; done;
-        echo "Setting VERSION to " ${branch_value}
-        exit 0
+        echo "VERSION value" $1 "is less than" $3 "version" $2
     fi
 
-    git checkout "$TRAVIS_BRANCH"
-
-    NEW_VERSION=$(increment_version $FILE_VERSION 3)
-    echo ${NEW_VERSION} > VERSION
-
+    for (( p=`grep -o "\."<<<".$BRANCH_OR_TAG_VALUE"|wc -l`; p<3; p++)); do 
+        BRANCH_OR_TAG_VALUE+=.0;
+        done;
+    echo "Setting VERSION to " ${BRANCH_OR_TAG_VALUE}
+    echo ${BRANCH_OR_TAG_VALUE} > VERSION
     git add VERSION
     # make Travis CI skip this build
-    git commit -m "Version updated to ${NEW_VERSION} [ci skip]"
+    git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
     local remote=origin
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
@@ -164,25 +152,31 @@ function git_branch_commit() {
         err "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
+    if [ $4 ]; then
+        VERSION=${VERSION}-$4
+    fi
+    echo "Starting version " ${VERSION} " release process"
+    # release_process
 
-    # Update develop VERSION value to match the next version to be released
+    # Update develop VERSION value to match the latest released version
     git fetch ${remote} develop
     git branch develop FETCH_HEAD
     git checkout develop
     DEV_VERSION=`cat VERSION`
-    version_compare NEW_VERSION DEV_VERSION
+    version_compare BRANCH_OR_TAG_VALUE DEV_VERSION
     COMPARE=$?
     if [[ ${COMPARE} = 2 ]]
     then
-        echo "Updating develop branch version to " ${NEW_VERSION}
-        echo ${NEW_VERSION} > VERSION
+        echo "Updating develop branch version to " ${BRANCH_OR_TAG_VALUE}
+        echo ${BRANCH_OR_TAG_VALUE} > VERSION
         git add VERSION
-        git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
+        git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]" #Skip travis build on develop commit
         git push ${remote} develop
     else
         echo "Develop VERSION value is not updated. New VERSION value is less than develop VERSION value"
         exit 0
     fi
+    exit 0
 }
 
 # release version depending on TRAVIS_BRANCH/ TRAVIS_TAG
@@ -196,12 +190,10 @@ then
     VERSION=`cat VERSION`
     FILE_VERSION=${VERSION}
 
-    IFS=- read -a ver_number <<< "$TRAVIS_BRANCH"
+    IFS=- read -a ver_nsumber <<< "$TRAVIS_BRANCH"
     BRANCH_VERSION=${ver_number[1]}
-    # append "-rc" suffix
-    VERSION=${VERSION}-rc
-    # increase VERSION value by 1 point
-    git_branch_commit ${FILE_VERSION} ${BRANCH_VERSION} "branch"
+    # Release with unified branch and file versions
+    git_branch_commit_and_release ${FILE_VERSION} ${BRANCH_VERSION} "branch" "rc"
 
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
