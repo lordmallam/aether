@@ -125,6 +125,8 @@ increment_version() {
 }
 
 function git_branch_commit_and_release() {
+    git config --global user.email "lordy002000@gmail.com"
+    git config --global user.name "lordmallam"
     local BRANCH_OR_TAG_VALUE=$2
     version_compare $1 $2
     COMPARE=$?
