@@ -174,10 +174,9 @@ function git_branch_commit_and_release() {
         git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]" #Skip travis build on develop commit
         git push ${remote} develop
     else
-        echo "Develop VERSION value is not updated. New VERSION value is same or less than develop VERSION value"
-        exit 0
+        echo "Develop branch VERSION value is not updated"
+        echo "New VERSION ${BRANCH_OR_TAG_VALUE} is same or less than develop VERSION ${DEV_VERSION}"
     fi
-    exit 0
 }
 
 # release version depending on TRAVIS_BRANCH/ TRAVIS_TAG
@@ -195,7 +194,7 @@ then
     BRANCH_VERSION=${ver_number[1]}
     # Release with unified branch and file versions
     git_branch_commit_and_release ${FILE_VERSION} ${BRANCH_VERSION} branch rc
-
+    exit 0
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
     VERSION='alpha'
