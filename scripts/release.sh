@@ -152,7 +152,7 @@ function git_branch_commit_and_release() {
         echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
         exit 1
     fi
-    if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
+    if ! git push --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         echo "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
