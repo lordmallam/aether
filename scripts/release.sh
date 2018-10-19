@@ -135,14 +135,14 @@ function git_branch_commit() {
     elif [[ ${COMPARE} = 1 ]]
     then
         echo "VERSION value is greater than the branch version"
-        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<3; p++)); do 
+        for (( p=`grep -o "\."<<<".$branch_value"|wc -l`; p<3; p++)); do 
             branch_value+=.0; done;
         echo "Setting VERSION to " ${branch_value}
         exit 0
     elif [[ ${COMPARE} = 2 ]]
     then
         echo "VERSION value is less than the branch version"
-        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<3; p++)); do 
+        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<2; p++)); do 
             branch_value+=.0; done;
         echo "Setting VERSION to " ${branch_value}
         exit 0
