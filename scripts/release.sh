@@ -137,14 +137,14 @@ function git_branch_commit() {
         echo "VERSION value is greater than the branch version"
         for (( p=`grep -o "\."<<<".$v"|wc -l`; p<3; p++)); do 
             branch_value+=.0; done;
-        echo "Equating both to " ${branch_value}
+        echo "Setting VERSION to " ${branch_value}
         exit 0
     elif [[ ${COMPARE} = 2 ]]
     then
         echo "VERSION value is less than the branch version"
         for (( p=`grep -o "\."<<<".$v"|wc -l`; p<3; p++)); do 
             branch_value+=.0; done;
-        echo "Equating both to " ${branch_value}
+        echo "Setting VERSION to " ${branch_value}
         exit 0
     fi
 
@@ -180,7 +180,6 @@ function git_branch_commit() {
         git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
         git push ${remote} develop
     else
-    then
         echo "Develop VERSION value is not updated. New VERSION value is less than develop VERSION value"
         exit 0
     fi
