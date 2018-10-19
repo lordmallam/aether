@@ -134,15 +134,15 @@ function git_branch_commit() {
         # release_process
     elif [[ ${COMPARE} = 1 ]]
     then
-        echo "VERSION value is greater than the branch version"
+        echo "VERSION value " $1 " is greater than " $3 " version" $2
         for (( p=`grep -o "\."<<<".$branch_value"|wc -l`; p<3; p++)); do 
             branch_value+=.0; done;
         echo "Setting VERSION to " ${branch_value}
         exit 0
     elif [[ ${COMPARE} = 2 ]]
     then
-        echo "VERSION value is less than the branch version"
-        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<2; p++)); do 
+        echo "VERSION value " $1 " is less than " $3 " version" $2
+        for (( p=`grep -o "\."<<<".$branch_value"|wc -l`; p<3; p++)); do 
             branch_value+=.0; done;
         echo "Setting VERSION to " ${branch_value}
         exit 0
@@ -201,7 +201,7 @@ then
     # append "-rc" suffix
     VERSION=${VERSION}-rc
     # increase VERSION value by 1 point
-    git_branch_commit ${FILE_VERSION} ${BRANCH_VERSION}
+    git_branch_commit ${FILE_VERSION} ${BRANCH_VERSION} "branch"
 
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
