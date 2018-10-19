@@ -164,7 +164,7 @@ function git_branch_commit_and_release() {
     git branch develop FETCH_HEAD
     git checkout develop
     DEV_VERSION=`cat VERSION`
-    version_compare ${BRANCH_OR_TAG_VALUE} ${DEV_VERSION}
+    version_compare ${DEV_VERSION} ${BRANCH_OR_TAG_VALUE}
     COMPARE=$?
     if [[ ${COMPARE} = 2 ]]
     then
