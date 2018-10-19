@@ -149,6 +149,7 @@ function git_branch_commit_and_release() {
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     fi
+    git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH"
     if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         echo "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
