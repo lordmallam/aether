@@ -145,12 +145,12 @@ function git_branch_commit_and_release() {
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    local remote=origin
+    local remote=https://github.com/$TRAVIS_REPO_SLUG
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     fi
     if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
-        err "Failed to push git changes to" $TRAVIS_BRANCH
+        echo "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
     if [ ! -z $4 ]; then
