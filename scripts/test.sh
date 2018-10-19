@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BRANCH_VERSION_TEXT='release-1.0.9'
+BRANCH_VERSION_TEXT='release-1'
 version_compare () {
     if [[ $1 == $2 ]]
     then
@@ -32,13 +32,13 @@ version_compare () {
     return 0
 }
 
-VERSION='1.0.9.1'
+VERSION='1.1.0'
 IFS=- read -a ver_number <<< "$BRANCH_VERSION_TEXT"
 BRANCH_VERSION=${ver_number[1]}
 version_compare $VERSION $BRANCH_VERSION
 case $? in
   0) 
-    echo 'Equals';;
+      echo 'Equals';;
   1) 
       echo 'VERSION value is greater than the branch version'
       exit 1;;

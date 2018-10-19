@@ -43,6 +43,9 @@ release_app () {
 }
 
 release_process () {
+    echo "Release version:  $VERSION"
+    echo "Release revision: $TRAVIS_COMMIT"
+
     # Login in dockerhub with write permissions (repos are public)
     docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
 
@@ -109,37 +112,40 @@ version_compare () {
 
 # Usage: increment_version <version> [<position>]
 increment_version() {
- local v=$1
- if [ -z $2 ]; then 
-    local rgx='^((?:[0-9]+\.)*)([0-9]+)($)'
- else 
-    local rgx='^((?:[0-9]+\.){'$(($2-1))'})([0-9]+)(\.|$)'
-    for (( p=`grep -o "\."<<<".$v"|wc -l`; p<$2; p++)); do 
-       v+=.0; done; fi
- val=`echo -e "$v" | perl -pe 's/^.*'$rgx'.*$/$2/'`
- echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+1))`/
+    local v=$1
+    if [ -z $2 ]; then 
+        local rgx='^((?:[0-9]+\.)*)([0-9]+)($)'
+    else 
+        local rgx='^((?:[0-9]+\.){'$(($2-1))'})([0-9]+)(\.|$)'
+        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<$2; p++)); do 
+            v+=.0; done;
+    fi
+    val=`echo -e "$v" | perl -pe 's/^.*'$rgx'.*$/$2/'`
+    echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+1))`/
 }
 
-function travis-branch-commit() {
-    UPDATE_DEVELOP_VERSION=0
-    if [ $TRAVIS_BRANCH != "develop" ]
+function git_branch_commit() {
+    local branch_value=$2
+    version_compare $1 $2
+    COMPARE=$?
+    if [[ ${COMPARE} = 0 ]]
     then
-        version_compare $1 $2
-        COMPARE=$?
-        if [[ ${COMPARE} = 0 ]]
-        then
-            msg "Starting versions (" ${VERSION} ", latest) release process ..."
-            # release_process
-            UPDATE_DEVELOP_VERSION=1
-        elif [[ ${COMPARE} = 1 ]]
-        then
-            err "VERSION value is greater than the branch version"
-            exit 1
-        elif [[ ${COMPARE} = 2 ]]
-        then
-            err "VERSION value is less than the branch version"
-            exit 1
-        fi
+        echo "Starting version " ${VERSION} " release process ..."
+        # release_process
+    elif [[ ${COMPARE} = 1 ]]
+    then
+        echo "VERSION value is greater than the branch version"
+        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<3; p++)); do 
+            branch_value+=.0; done;
+        echo "Equating both to " ${branch_value}
+        exit 0
+    elif [[ ${COMPARE} = 2 ]]
+    then
+        echo "VERSION value is less than the branch version"
+        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<3; p++)); do 
+            branch_value+=.0; done;
+        echo "Equating both to " ${branch_value}
+        exit 0
     fi
 
     git checkout "$TRAVIS_BRANCH"
@@ -149,46 +155,35 @@ function travis-branch-commit() {
 
     git add VERSION
     # make Travis CI skip this build
-    git commit -m "Travis CI update [ci skip]"
+    git commit -m "Version updated to ${NEW_VERSION} [ci skip]"
     local remote=origin
     if [[ $GITHUB_TOKEN ]]; then
         remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     fi
-    # if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
-    #     err "failed to push git changes to" $TRAVIS_BRANCH
-    #     exit 1
-    # fi
+    if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
+        err "Failed to push git changes to" $TRAVIS_BRANCH
+        exit 1
+    fi
 
-    if [ ${UPDATE_DEVELOP_VERSION} = 1 ]
+    # Update develop VERSION value to match the next version to be released
+    git fetch ${remote} develop
+    git branch develop FETCH_HEAD
+    git checkout develop
+    DEV_VERSION=`cat VERSION`
+    version_compare NEW_VERSION DEV_VERSION
+    COMPARE=$?
+    if [[ ${COMPARE} = 2 ]]
     then
         echo "Updating develop branch version to " ${NEW_VERSION}
-        git fetch ${remote} develop
-        echo "--------------------------------------------"
-        git branch develop FETCH_HEAD
-        echo "--------------------------------------------"
-        echo `git rev-parse develop`
-        echo "--------------------------------------------"
-        git branch -a
-        echo "--------------------------------------------"
-        git checkout develop
-        echo "--------------------------------------------"
         echo ${NEW_VERSION} > VERSION
         git add VERSION
         git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
-        git push "$remote" "develop"
-        # if ! git push "origin/develop" > /dev/null 2>&1; then
-        #     err "failed to push git changes to develop branch"
-        #     exit 1
-        # fi
+        git push ${remote} develop
+    else
+    then
+        echo "Develop VERSION value is not updated. New VERSION value is less than develop VERSION value"
+        exit 0
     fi
-}
-
-function msg() {
-    echo "Versioning: $*"
-}
-
-function err() {
-    msg "$*" 1>&2
 }
 
 # release version depending on TRAVIS_BRANCH/ TRAVIS_TAG
@@ -206,18 +201,14 @@ then
     BRANCH_VERSION=${ver_number[1]}
     # append "-rc" suffix
     VERSION=${VERSION}-rc
+    # increase VERSION value by 1 point
+    git_branch_commit ${FILE_VERSION} ${BRANCH_VERSION}
 
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
     VERSION='alpha'
-    FILE_VERSION=`cat VERSION`
-
+    release_process
 else
     echo "Skipping a release because this branch is not permitted: ${TRAVIS_BRANCH}"
     exit 0
 fi
-
-echo "Release version:  $VERSION"
-echo "Release revision: $TRAVIS_COMMIT"
-
-travis-branch-commit ${FILE_VERSION} ${BRANCH_VERSION}
