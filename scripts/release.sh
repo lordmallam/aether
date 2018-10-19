@@ -147,7 +147,7 @@ function git_branch_commit_and_release() {
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
     local remote=origin
     if [[ $GITHUB_TOKEN ]]; then
-        remote=https://username:$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
+        remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
         echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
         exit 1
