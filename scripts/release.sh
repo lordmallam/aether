@@ -145,15 +145,16 @@ function git_branch_commit_and_release() {
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    local remote=origin
-    if [[ ${GITHUB_TOKEN} ]]; then
-        remote=https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG
-    else
-        echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
-        exit 1
-    fi
-    git push --follow-tags "$remote" "$TRAVIS_BRANCH"
-    if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
+    git config -
+    local REMOTE=origin
+    # if [[ $GITHUB_TOKEN ]]; then
+    #     REMOTE=https://github.com/$TRAVIS_REPO_SLUG
+    # else
+    #     echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
+    #     exit 1
+    # fi
+    git push --follow-tags "$REMOTE" "$TRAVIS_BRANCH"
+    if ! git push --quiet --follow-tags "$REMOTE" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         echo "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
@@ -164,7 +165,7 @@ function git_branch_commit_and_release() {
     # release_process
 
     # Update develop VERSION value to match the latest released version
-    git fetch ${remote} develop
+    git fetch ${REMOTE} develop
     git branch develop FETCH_HEAD
     git checkout develop
     DEV_VERSION=`cat VERSION`
@@ -176,7 +177,7 @@ function git_branch_commit_and_release() {
         echo ${BRANCH_OR_TAG_VALUE} > VERSION
         git add VERSION
         git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]" #Skip travis build on develop commit
-        git push ${remote} develop
+        git push ${REMOTE} develop
     else
         echo "Develop branch VERSION value is not updated"
         echo "New VERSION ${BRANCH_OR_TAG_VALUE} is same or less than develop VERSION ${DEV_VERSION}"
