@@ -180,7 +180,6 @@ function git_branch_commit() {
         git commit -m "Version updated to ${NEW_VERSION} [ci skip]" #Skip travis build on develop commit
         git push ${remote} develop
     else
-    then
         echo "Develop VERSION value is not updated. New VERSION value is less than develop VERSION value"
         exit 0
     fi
