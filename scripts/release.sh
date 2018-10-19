@@ -153,8 +153,9 @@ function git_branch_commit_and_release() {
         err "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
+    echo $4 "ECHO 4"
     if [ ! -z $4 ]; then
-        VERSION=${VERSION}-$4
+        VERSION=${BRANCH_OR_TAG_VALUE}-$4
     fi
     echo "Starting version " ${VERSION} " release process"
     # release_process
