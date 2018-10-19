@@ -90,10 +90,10 @@ CONNECT_COMPOSE='docker-compose-connect.yml'
 
 for APP in "${CORE_APPS[@]}"
 do
-    release_app $APP $CORE_COMPOSE
+    # release_app $APP $CORE_COMPOSE
 done
 
 for CONNECT_APP in "${CONNECT_APPS[@]}"
 do
-    release_app $CONNECT_APP $CONNECT_COMPOSE
+    # release_app $CONNECT_APP $CONNECT_COMPOSE
 done
