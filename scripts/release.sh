@@ -190,7 +190,7 @@ then
     VERSION=`cat VERSION`
     FILE_VERSION=${VERSION}
 
-    IFS=- read -a ver_nsumber <<< "$TRAVIS_BRANCH"
+    IFS=- read -a ver_number <<< "$TRAVIS_BRANCH"
     BRANCH_VERSION=${ver_number[1]}
     # Release with unified branch and file versions
     git_branch_commit_and_release ${FILE_VERSION} ${BRANCH_VERSION} branch rc
