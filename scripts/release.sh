@@ -193,7 +193,7 @@ then
     IFS=- read -a ver_nsumber <<< "$TRAVIS_BRANCH"
     BRANCH_VERSION=${ver_number[1]}
     # Release with unified branch and file versions
-    git_branch_commit_and_release ${FILE_VERSION} ${BRANCH_VERSION} "branch" "rc"
+    git_branch_commit_and_release ${FILE_VERSION} ${BRANCH_VERSION} branch rc
 
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
