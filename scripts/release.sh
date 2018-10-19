@@ -150,7 +150,7 @@ function git_branch_commit_and_release() {
     git config --global user.email "lordy002000@gmail.com"
     git config --global user.name "Lord-Mallam"
     if [[ $GITHUB_TOKEN ]]; then
-        REMOTE=https://github.com/$TRAVIS_REPO_SLUG
+        REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
         echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
         exit 1
