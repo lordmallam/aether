@@ -174,7 +174,7 @@ function git_branch_commit_and_release() {
         git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]" #Skip travis build on develop commit
         git push ${remote} develop
     else
-        echo "Develop VERSION value is not updated. New VERSION value is less than develop VERSION value"
+        echo "Develop VERSION value is not updated. New VERSION value is same or less than develop VERSION value"
         exit 0
     fi
     exit 0
