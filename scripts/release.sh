@@ -140,6 +140,7 @@ function git_branch_commit_and_release() {
         BRANCH_OR_TAG_VALUE+=.0;
         done;
     echo "Setting VERSION to " ${BRANCH_OR_TAG_VALUE}
+    git checkout "$TRAVIS_BRANCH"
     echo ${BRANCH_OR_TAG_VALUE} > VERSION
     git add VERSION
     # make Travis CI skip this build
@@ -152,7 +153,7 @@ function git_branch_commit_and_release() {
         err "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
-    if [ $4 ]; then
+    if [ ! -z $4 ]; then
         VERSION=${VERSION}-$4
     fi
     echo "Starting version " ${VERSION} " release process"
