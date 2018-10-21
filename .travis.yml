@@ -48,8 +48,6 @@ matrix:
     - name: "Aether release"
       stage: deploy
       script: ./scripts/release.sh
-      env:
-        secure: 3bWZMmLeQFc0mC+M+m6805nkzBHJ4ZCEeDDAv45ubdVwR2LybaCkxmxjwXJYE19fBRBy/t+sUQ6/B316mmCnivg7giI14CaSHCKT1qd2EbMFHfVMOmuSIwSfPfoCV8yXIyGWHxmky8IbGar1zD1QO+S8HWyK9NADmcLHOp8FibDJ3istWMCqS/n//3ZCxGDp2ZGD+sSMPYfHwHNZmyv5DazFbk3WIhcfhOzMslOMZQwMkSeJewIn/jy2BXZhXLbpqSGe33AQRdCFB8piqfmnOhIyEeCpEpHde25ahQQV1KACXqFk3xu6+PlgKvN3u0Gad6FsqsaP89GvalHT5hqYuPOEBi1jb4pwW8VBMYPDzcTyJAeDreWlkcSufDTLLyV3B20qKPRg6IwC2PtgqD1bi2MbWOlhFZ6QYBC7kgTvqLArDUk9GxLYVFOFTiJssXw37ZGivIGRct+A5skYxEwNpMEvi53jE0dEC67X/MthE0IOxiqHHOqQXqnaXggwGL2kijXe9LoRES6E0KQ+qk1Wu/3ycHHzzMBxNIY8burfDj6AyMYkiRw1fvaQGhtwLyOeGp75DvZn5HAzP5+EMJ8l053c4yVDMN8IPcC+Cl0+JEAUEtTN6QfKFaFNxDRJRv0hPE9FimSyVTK7PU55WFQB5AmsTW+bSpCHyxsh6j8h0MM=
 
 install: true
 
