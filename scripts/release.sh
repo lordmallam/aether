@@ -210,5 +210,4 @@ then
 else
     echo "Skipping a release because this branch is not permitted: ${TRAVIS_BRANCH}"
     exit 0
-
 fi
