@@ -147,19 +147,17 @@ function git_branch_commit_and_release() {
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
     git config -
     local REMOTE=origin
-    git config --global user.email "lordy002000@gmail.com"
-    git config --global user.name "Lord-Mallam"
     if [[ $GITHUB_TOKEN ]]; then
-        REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
+        REMOTE=https://$GITHUB_TOKEN@github.com/lordmallam/aether.git
     else
         echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
         exit 1
     fi
     git push --follow-tags "$REMOTE" "$TRAVIS_BRANCH"
-    if ! git push --quiet --follow-tags "$REMOTE" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
-        echo "Failed to push git changes to" $TRAVIS_BRANCH
-        exit 1
-    fi
+    # if ! git push --quiet --follow-tags "$REMOTE" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
+    #     echo "Failed to push git changes to" $TRAVIS_BRANCH
+    #     exit 1
+    # fi
     if [ ! -z $4 ]; then
         VERSION=${BRANCH_OR_TAG_VALUE}-$4
     fi
