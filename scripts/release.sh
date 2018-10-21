@@ -149,6 +149,7 @@ function git_branch_commit_and_release() {
     else
         echo "No branch or tag provided"
         exit 1
+    fi
 
     echo ${BRANCH_OR_TAG_VALUE} > VERSION
     git add VERSION
