@@ -158,7 +158,6 @@ function git_branch_commit_and_release() {
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    git push --follow-tags ${REMOTE} $TRAVIS_BRANCH
     if ! git push --quiet --follow-tags ${REMOTE} $TRAVIS_BRANCH > /dev/null 2>&1; then
         echo "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
