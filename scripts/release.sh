@@ -140,10 +140,10 @@ function git_branch_commit_and_release() {
         BRANCH_OR_TAG_VALUE+=.0;
         done;
     echo "Setting VERSION to " ${BRANCH_OR_TAG_VALUE}
-    if [ $3 = "tag" ];
+    if [[ $3 = "tag" ]];
     then
         git branch --contains tags/$TRAVIS_BRANCH
-    elif [ $s = "branch" ];
+    elif [[ $3 = "branch" ]];
     then
         git checkout "$TRAVIS_BRANCH"
     else
