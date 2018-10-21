@@ -147,11 +147,7 @@ function git_branch_commit_and_release() {
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
     local REMOTE=origin
     if [[ $GITHUB_TOKEN ]]; then
-        git config --global user.name "lordmallam"
-        git config --global user.email "lordy002000@gmail.com"
-        git remote add upstream https://$GITHUB_TOKEN@github.com/lordmallam/aether.git
-        git remote -v
-        REMOTE=upstream
+        REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
         echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
         exit 1
