@@ -146,6 +146,7 @@ function git_branch_commit_and_release() {
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
     local REMOTE=origin
+    echo "TOKEN" ${GITHUB_TOKEN}
     if [[ $GITHUB_TOKEN ]]; then
         REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
