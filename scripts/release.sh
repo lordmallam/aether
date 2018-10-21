@@ -110,20 +110,6 @@ version_compare () {
     return 0
 }
 
-# Usage: increment_version <version> [<position>]
-increment_version() {
-    local v=$1
-    if [ -z $2 ]; then 
-        local rgx='^((?:[0-9]+\.)*)([0-9]+)($)'
-    else 
-        local rgx='^((?:[0-9]+\.){'$(($2-1))'})([0-9]+)(\.|$)'
-        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<$2; p++)); do 
-            v+=.0; done;
-    fi
-    val=`echo -e "$v" | perl -pe 's/^.*'$rgx'.*$/$2/'`
-    echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+1))`/
-}
-
 function git_branch_commit_and_release() {
     local BRANCH_OR_TAG_VALUE=$2
     local REMOTE=origin COMMIT_BRANCH=$TRAVIS_BRANCH
@@ -160,9 +146,8 @@ function git_branch_commit_and_release() {
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    git push -f --follow-tags ${REMOTE} $TRAVIS_BRANCH
     if ! git push --quiet --follow-tags ${REMOTE} ${COMMIT_BRANCH} > /dev/null 2>&1; then
-        echo "Failed to push git changes to" ${COMMIT_BRANCH}
+        echo "Failed to push git changes to" $TRAVIS_BRANCH
         exit 1
     fi
     if [ ! -z $4 ]; then
