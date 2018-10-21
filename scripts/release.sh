@@ -162,7 +162,6 @@ function git_branch_commit_and_release() {
     fi
     echo "Starting version" ${VERSION} "release"
     # release_process
-
     # Update develop VERSION value to match the latest released version
     git fetch ${REMOTE} develop
     git branch develop FETCH_HEAD
