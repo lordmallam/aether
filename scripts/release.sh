@@ -140,24 +140,24 @@ function git_branch_commit_and_release() {
         BRANCH_OR_TAG_VALUE+=.0;
         done;
     echo "Setting VERSION to " ${BRANCH_OR_TAG_VALUE}
+    git remote -v
     git checkout "$TRAVIS_BRANCH"
     echo ${BRANCH_OR_TAG_VALUE} > VERSION
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    git config -
     local REMOTE=origin
     if [[ $GITHUB_TOKEN ]]; then
-        REMOTE=https://$GITHUB_TOKEN@github.com/lordmallam/aether.git
+        REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
         echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
         exit 1
     fi
     git push --follow-tags "$REMOTE" "$TRAVIS_BRANCH"
-    # if ! git push --quiet --follow-tags "$REMOTE" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
-    #     echo "Failed to push git changes to" $TRAVIS_BRANCH
-    #     exit 1
-    # fi
+    if ! git push --quiet --follow-tags "$REMOTE" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
+        echo "Failed to push git changes to" $TRAVIS_BRANCH
+        exit 1
+    fi
     if [ ! -z $4 ]; then
         VERSION=${BRANCH_OR_TAG_VALUE}-$4
     fi
