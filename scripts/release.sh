@@ -126,7 +126,7 @@ increment_version() {
 
 function git_branch_commit_and_release() {
     local BRANCH_OR_TAG_VALUE=$2
-    local REMOTE=origin
+    local REMOTE=origin COMMIT_BRANCH=$TRAVIS_BRANCH
     if [[ $GITHUB_TOKEN ]]; then
         REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
@@ -147,10 +147,12 @@ function git_branch_commit_and_release() {
         BRANCH_OR_TAG_VALUE+=.0;
         done;
     echo "Setting VERSION to " ${BRANCH_OR_TAG_VALUE}
+    
     if [[ $3 = "tag" ]];
     then
         git fetch ${REMOTE} $TRAVIS_BRANCH
         git branch $TRAVIS_BRANCH FETCH_HEAD
+        COMMIT_BRANCH=HEAD
     fi
 
     git checkout $TRAVIS_BRANCH
@@ -158,9 +160,9 @@ function git_branch_commit_and_release() {
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    git push --follow-tags ${REMOTE} $TRAVIS_BRANCH
-    if ! git push --quiet --follow-tags ${REMOTE} $TRAVIS_BRANCH > /dev/null 2>&1; then
-        echo "Failed to push git changes to" $TRAVIS_BRANCH
+    git push -f --follow-tags ${REMOTE} $TRAVIS_BRANCH
+    if ! git push --quiet --follow-tags ${REMOTE} ${COMMIT_BRANCH} > /dev/null 2>&1; then
+        echo "Failed to push git changes to" ${COMMIT_BRANCH}
         exit 1
     fi
     if [ ! -z $4 ]; then
