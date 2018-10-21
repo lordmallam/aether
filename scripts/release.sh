@@ -126,6 +126,13 @@ increment_version() {
 
 function git_branch_commit_and_release() {
     local BRANCH_OR_TAG_VALUE=$2
+    local REMOTE=origin
+    if [[ $GITHUB_TOKEN ]]; then
+        REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
+    else
+        echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
+        exit 1
+    fi
     version_compare $1 $2
     COMPARE=$?
     if [[ ${COMPARE} = 1 ]]
@@ -144,9 +151,12 @@ function git_branch_commit_and_release() {
     then
         echo "TAG1:: " $TRAVIS_BRANCH
         echo "TAG2:: " $TRAVIS_TAG
-        git fetch $TRAVIS_BRANCH
+        git fetch ${REMOTE} $TRAVIS_BRANCH
         git branch $TRAVIS_BRANCH FETCH_HEAD
         git branch --contains tags/$TRAVIS_TAG
+        echo "--------------------------------------------"
+        printenv
+        echo "--------------------------------------------"
     elif [[ $3 = "branch" ]];
     then
         git checkout "$TRAVIS_BRANCH"
@@ -159,13 +169,6 @@ function git_branch_commit_and_release() {
     git add VERSION
     # make Travis CI skip this build
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
-    local REMOTE=origin
-    if [[ $GITHUB_TOKEN ]]; then
-        REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
-    else
-        echo "Missing environment variable GITHUB_TOKEN=[GitHub Personal Access Token]"
-        exit 1
-    fi
     git push --follow-tags "$REMOTE" "$TRAVIS_BRANCH"
     if ! git push --quiet --follow-tags "$REMOTE" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
         echo "Failed to push git changes to" $TRAVIS_BRANCH
