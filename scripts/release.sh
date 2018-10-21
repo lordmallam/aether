@@ -162,6 +162,7 @@ function git_branch_commit_and_release() {
     fi
     echo "Starting version" ${VERSION} "release"
     # release_process
+
     # Update develop VERSION value to match the latest released version
     git fetch ${REMOTE} develop
     git branch develop FETCH_HEAD
@@ -186,7 +187,11 @@ function git_branch_commit_and_release() {
 if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+[\.0-9]*$ ]]
 then
     VERSION=$TRAVIS_TAG
-    FILE_VERSION=$TRAVIS_TAG
+    FILE_VERSION=`cat VERSION`
+
+    # Release with unified branch and file versions
+    git_branch_commit_and_release ${FILE_VERSION} $TRAVIS_TAG tag
+    exit 0
 
 elif [[ $TRAVIS_BRANCH =~ ^release\-[0-9]+\.[0-9]+[\.0-9]*$ ]]
 then
