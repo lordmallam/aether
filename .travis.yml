@@ -11,9 +11,9 @@ services:
 matrix:
   fast_finish: true
   include:
-    - name: "Aether CORE tests (Kernel, Client, UI, ODK and CouchDB-Sync)"
-      stage: test
-      env: 'TEST_MODE=all'
+    # - name: "Aether CORE tests (Kernel, Client, UI, ODK and CouchDB-Sync)"
+    #   stage: test
+    #   env: 'TEST_MODE=all'
 
     # split containers one by one
     # - name: "Aether Kernel tests"
@@ -36,9 +36,9 @@ matrix:
     #   stage: test
     #   env: 'TEST_MODE=ui'
 
-    - name: "Integration tests (Kernel with Kakfa/Zookeeper and Producer)"
-      stage: test
-      env: 'TEST_MODE=integration'
+    # - name: "Integration tests (Kernel with Kakfa/Zookeeper and Producer)"
+    #   stage: test
+    #   env: 'TEST_MODE=integration'
 
     #  - name: "Kubernetes tests (Kernel and ODK)"
     #    stage: test
@@ -48,7 +48,6 @@ matrix:
     - name: "Aether release"
       stage: deploy
       script: ./scripts/release.sh
-
 
 install: true
 
