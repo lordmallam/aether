@@ -49,7 +49,6 @@ matrix:
       stage: deploy
       script: ./scripts/release.sh
 
-
 install: true
 
 before_script:
