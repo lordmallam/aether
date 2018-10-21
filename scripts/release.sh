@@ -147,7 +147,7 @@ function git_branch_commit_and_release() {
     git commit -m "Version updated to ${BRANCH_OR_TAG_VALUE} [ci skip]"
     local REMOTE=origin
     echo "TOKEN" ${GITHUB_TOKEN}
-    printevn
+    printenv
     if [[ $GITHUB_TOKEN ]]; then
         REMOTE=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
     else
