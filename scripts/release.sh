@@ -140,7 +140,16 @@ function git_branch_commit_and_release() {
         BRANCH_OR_TAG_VALUE+=.0;
         done;
     echo "Setting VERSION to " ${BRANCH_OR_TAG_VALUE}
-    git checkout "$TRAVIS_BRANCH"
+    if [ $3 = "tag" ];
+    then
+        git branch --contains tags/$TRAVIS_BRANCH
+    elif [ $s = "branch" ];
+    then
+        git checkout "$TRAVIS_BRANCH"
+    else
+        echo "No branch or tag provided"
+        exit 1
+
     echo ${BRANCH_OR_TAG_VALUE} > VERSION
     git add VERSION
     # make Travis CI skip this build
