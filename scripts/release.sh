@@ -206,7 +206,7 @@ then
 elif [[ $TRAVIS_BRANCH = "develop" ]]
 then
     VERSION='alpha'
-    release_process
+    # release_process
 else
     echo "Skipping a release because this branch is not permitted: ${TRAVIS_BRANCH}"
     exit 0
